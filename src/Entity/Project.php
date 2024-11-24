@@ -36,7 +36,7 @@ class Project
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank]
-    private ?\DateTimeInterface $openDate = null;
+    private \DateTimeInterface $openDate;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $closeDate = null;

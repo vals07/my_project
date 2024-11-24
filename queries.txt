@@ -1,0 +1,46 @@
+Общее количество проектов
+SELECT COUNT(DISTINCT "name") FROM project
+
+количество открытых проектов
+SELECT COUNT(DISTINCT "name") FROM project WHERE close_date IS NULL
+
+количество закрытых проектов
+SELECT COUNT(DISTINCT "name") FROM project WHERE close_date IS NOT NULL
+
+Количество сотрудников за все время
+SELECT COUNT(id) FROM developer
+
+Количество работающих сотрудников
+SELECT COUNT(id) FROM developer WHERE fire_date IS NULL
+
+Количество уволившихся сотрудников
+SELECT COUNT(id) FROM developer WHERE fire_date IS NOT NULL
+
+Средний возраст работающих сотрудников
+SELECT
+      round(avg(date_part('year', age(birth_date))))
+ FROM (SELECT birth_date FROM developer WHERE fire_date IS NULL)
+
+Минимальный возраст работающих сотрудников
+ SELECT
+      round(min(date_part('year', age(birth_date))))
+ FROM (SELECT birth_date FROM developer WHERE fire_date IS NULL)
+
+ Максимальный возраст работающих сотрудников
+ SELECT
+      round(max(date_part('year', age(birth_date))))
+ FROM (SELECT birth_date FROM developer WHERE fire_date IS NULL)
+
+Среднее время работы в компании
+ SELECT
+      round(avg(date_part('year', work_age)))
+ FROM (SELECT age(hire_date) AS work_age FROM developer WHERE fire_date IS NULL
+UNION
+ SELECT age(fire_date, hire_date) AS work_age FROM developer WHERE fire_date IS NOT NULL)
+
+ Среднее количество разработчиков, задействованных на проекте
+ SELECT round(avg(cnt)) FROM
+(SELECT project.name, COUNT(*) AS cnt FROM project 
+LEFT JOIN developer_project AS dp ON project.id = dp.project_id
+LEFT JOIN developer ON developer.id = dp.developer_id WHERE fire_date IS NULL
+GROUP BY project.id)

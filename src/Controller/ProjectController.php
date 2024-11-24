@@ -7,10 +7,11 @@ namespace App\Controller;
 use App\Entity\Project;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProjectController extends AbstractController
 {
@@ -37,13 +38,19 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/projects/create', name: 'project_create')]
-    public function addDeveloper(Request $request)
+    public function add(Request $request, ValidatorInterface $validator)
     {
         $project = new Project();
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $project->setOpenDate(new \DateTime());
+            $errors = $validator->validate($project);
+            if (count($errors) > 0) {
+                return $this->render('validation.html.twig', [
+                    'errors' => $errors,
+                ]);
+            }
             $this->em->persist($project);
             $this->em->flush();
 
@@ -56,12 +63,18 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/projects/update/{id}', name: 'project_update')]
-    public function edit(Project $project, Request $request)
+    public function edit(Project $project, Request $request, ValidatorInterface $validator)
     {
          $form = $this->createForm(ProjectType::class, $project);
          $form->handleRequest($request);
 
          if ($form->isSubmitted() && $form->isValid()) {
+            $errors = $validator->validate($project);
+            if (count($errors) > 0) {
+                return $this->render('validation.html.twig', [
+                    'errors' => $errors,
+                ]);
+            }
             $this->em->flush();
 
             return $this->redirectToRoute('projects_list');

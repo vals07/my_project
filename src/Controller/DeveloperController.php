@@ -7,11 +7,11 @@ namespace App\Controller;
 use App\Entity\Developer;
 use App\Form\DeveloperType;
 use App\Repository\DeveloperRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Form\FormError; 
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class DeveloperController extends AbstractController
 {
@@ -39,16 +39,24 @@ class DeveloperController extends AbstractController
     }
 
     #[Route('/developers/create', name: 'developer_create')]
-    public function addDeveloper(Request $request)
+    public function addDeveloper(Request $request, ValidatorInterface $validator)
     {
         $developer = new Developer();
         $form = $this->createForm(DeveloperType::class, $developer);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && empty($form['email']->getData())) {
+
+        
+
+       /* if ($form->isSubmitted() && empty($form['email']->getData())) {
             $form->addError(new FormError('Поле должно быть заполнено'));
-        }
+        }*/
         if ($form->isSubmitted() && $form->isValid()) {
-            $developer->setHireDate(new \DateTime());
+            $errors = $validator->validate($developer);
+            if (count($errors) > 0) {
+                return $this->render('validation.html.twig', [
+                    'errors' => $errors,
+                ]);
+            }
             $this->em->persist($developer);
             $this->em->flush();
 
@@ -61,12 +69,18 @@ class DeveloperController extends AbstractController
     }
 
     #[Route('/developers/update/{id}', name: 'developer_update')]
-    public function edit(Developer $developer, Request $request)
+    public function edit(Developer $developer, Request $request, ValidatorInterface $validator)
     {
          $form = $this->createForm(DeveloperType::class, $developer);
          $form->handleRequest($request);
 
          if ($form->isSubmitted() && $form->isValid()) {
+            $errors = $validator->validate($developer);
+            if (count($errors) > 0) {
+                return $this->render('validation.html.twig', [
+                    'errors' => $errors,
+                ]);
+            }
             $this->em->flush();
 
             return $this->redirectToRoute('developers_list');

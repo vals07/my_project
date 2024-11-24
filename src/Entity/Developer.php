@@ -22,22 +22,31 @@ class Developer
 
     #[ORM\Column(length: 500)]
     #[Assert\NotBlank]
-    private ?string $fullName = null;
+    private string $fullName;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank]
-    private ?\DateTimeInterface $birthDate = null;
+    #[Assert\LessThan(value: '-18 years',
+                      message: 'Принимаемому сотруднику должно быть больше 18 лет.')]
+    private \DateTimeInterface $birthDate;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
-    private ?string $position = null;
+    private string $position;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Email(
+        message: 'Это значение {{ value }} не является валидным электронным адресом.',
+    )]
     private ?string $email = null;
 
     #[ORM\Column(length: 11, nullable: true)]
     #[Assert\NotBlank]
-    private ?string $phoneNumber = null;
+    #[Assert\Regex(pattern: '/[\d]{11}/',
+                   message: 'Номер телефона может содержать только цифры.')]
+    #[Assert\Length(exactly: 11,
+                    exactMessage: "Это значение должно иметь ровно {{ limit }} цифр.")]    
+    private string $phoneNumber;
 
     /**
      * @var Collection<int, Project>
@@ -46,7 +55,7 @@ class Developer
     private Collection $projects;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $hireDate = null;
+    private \DateTimeInterface $hireDate;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $fireDate = null;
