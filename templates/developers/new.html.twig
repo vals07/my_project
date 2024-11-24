@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    {{ form_start(form) }}
+        {{ form_row(form.fullName) }}
+        {{ form_row(form.birthDate) }}
+        {{ form_row(form.position) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.phoneNumber) }}
+        {{ form_row(form.hireDate) }}
+        {{ form_row(form.projects) }}
+    <button class="btn btn-default" type="submit">Сохранить</button>
+    {{ form_end(form) }}
+{% endblock %}

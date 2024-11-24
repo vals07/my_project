@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {% endblock %}
+
+{% block body %}
+    <a href="{{ path('project_create') }}" class="btn btn-primary">Открыть новый проект</a>
+    <table border=1>
+        <tr style="font-weight: 600">
+            <td>ИД</td>
+            <td>Название</td>
+            <td>Заказчик</td>
+            <td>Дата открытия</td>
+            <td>Разработчики</td>
+            <td colspan="2">Действия</td>
+        </tr>
+        {% for project in projects %}
+            <tr>
+                <td>{{ project.id }}</td>
+                <td>{{ project.name }}</td>
+                <td>{{ project.client }}</td>
+                <td>{{ project.openDate|date('d.m.Y') }}</td>
+                <td>
+                    {% for developer in project.developers|filter(developer => developer.fireDate is null)|sort %}
+                        {{ developer.fullName }}<br>
+                    {% endfor %}
+                </td>
+                <td><a href="{{ path('project_update', {'id': project.id}) }}">Изменить</a></td>
+                <td><a href="{{ path('project_delete', {'id': project.id}) }}">Закрыть</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

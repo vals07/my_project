@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {% endblock %}
+
+{% block body %}
+    <a href="{{ path('developer_create') }}" class="btn btn-primary">Принять нового сотрудника</a>
+    <table border=1>
+        <tr style="font-weight: 600">
+            <td>ИД</td>
+            <td>ФИО</td>
+            <td>Дата рождения</td>
+            <td>Должность</td>
+            <td>E-mail</td>
+            <td>Контактный телефон</td>
+            <td>Дата приема  на работу</td>
+            <td>Проекты</td>
+            <td colspan="2">Действия</td>
+        </tr>
+        {% for developer in developers %}
+            <tr>
+                <td>{{ developer.id }}</td>
+                <td>{{ developer.fullName }}</td>
+                <td>{{ developer.birthDate|date('d.m.Y') }}</td>
+                <td>{{ developer.position }}</td>
+                <td>{{ developer.email }}</td>
+                <td>{{ developer.phoneNumber }}</td>
+                <td>{{ developer.hireDate|date('d.m.Y') }}</td>
+                <td>
+                    {% for project in developer.projects|filter(project => project.closeDate is null)|sort %}
+                        {{ project.name }}<br>
+                    {% endfor %}
+                </td>
+                <td><a href="{{ path('developer_update', {'id': developer.id}) }}">Изменить</a></td>
+                <td><a href="{{ path('developer_delete', {'id': developer.id}) }}">Уволить</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
