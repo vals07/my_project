@@ -8,6 +8,7 @@ use App\Entity\Developer;
 use App\Form\DeveloperType;
 use App\Repository\DeveloperRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,17 +40,12 @@ class DeveloperController extends AbstractController
     }
 
     #[Route('/developers/create', name: 'developer_create')]
-    public function addDeveloper(Request $request, ValidatorInterface $validator)
+    public function addDeveloper(Request $request, ValidatorInterface $validator, LoggerInterface $logger)
     {
         $developer = new Developer();
         $form = $this->createForm(DeveloperType::class, $developer);
         $form->handleRequest($request);
 
-        
-
-       /* if ($form->isSubmitted() && empty($form['email']->getData())) {
-            $form->addError(new FormError('Поле должно быть заполнено'));
-        }*/
         if ($form->isSubmitted() && $form->isValid()) {
             $errors = $validator->validate($developer);
             if (count($errors) > 0) {
@@ -59,7 +55,7 @@ class DeveloperController extends AbstractController
             }
             $this->em->persist($developer);
             $this->em->flush();
-
+            $logger->info("DEVELOPER add " . $developer);
             return $this->redirectToRoute('developers_list');
         }
 

@@ -177,4 +177,21 @@ class Developer
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        $projectsString = '';
+        foreach($this->projects as $project) {
+            $projectsString .= $project->getName() . " ";
+        }
+
+        return  'ФИО: ' . $this->fullName . "\n" .
+                'Дата рождения: ' . $this->birthDate->format('d.m.Y') . "\n" .
+                'Должность: ' . $this->position . "\n" .
+                'Email: ' . $this->email . "\n" .
+                'Номер телефона: ' . $this->phoneNumber . "\n" .
+                'Дата приема: ' . $this->hireDate->format('d.m.Y') . "\n" .
+                'Дата увольнения: ' . $this->fireDate?->format('d.m.Y') . "\n" .
+                'Проекты: ' . $projectsString . "\n";
+    }
 }
